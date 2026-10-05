@@ -111,11 +111,26 @@ download.addEventListener("click",function(){
   ctx.restore();
   ctx.drawImage(frame,0,0,1536,1536);
   c.toBlob(function(blob){
-    var u=URL.createObjectURL(blob),a=document.createElement("a");
-    a.href=u;a.download="mohim-institution-reunion-2027.png";
-    document.body.appendChild(a);a.click();a.remove();
+    if(!blob){ status.textContent="ছবি তৈরি করা যায়নি। আবার চেষ্টা করুন।"; return; }
+    var u=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=u;
+    a.download="mohim-institution-reunion-2027.png";
+    a.target="_blank";
+    a.rel="noopener";
+    a.style.display="none";
+    document.body.appendChild(a);
+    try { a.click(); } catch(e) {}
+    a.remove();
     status.textContent="ডাউনলোড শুরু হয়েছে।";
-    setTimeout(function(){URL.revokeObjectURL(u)},3000);
+    setTimeout(function(){URL.revokeObjectURL(u)},5000);
+    // কিছু মোবাইল ব্রাউজারে download attribute কাজ না করলে ছবিটি নতুন ট্যাবে খোলা হবে।
+    setTimeout(function(){
+      if(document.visibilityState !== "hidden" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){
+        var w=window.open(u,"_blank");
+        if(w) status.textContent="ছবি নতুন ট্যাবে খোলা হয়েছে—সেখান থেকে Save/Download করুন।";
+      }
+    },700);
   },"image/png");
 });
 setZoom(1);
