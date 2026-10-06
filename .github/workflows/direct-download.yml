@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Replace all download handlers
+      - name: Install final download handler
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          new=r'''document.getElementById('download').onclick=async()=>{
+          new=r'''<script>
+          document.getElementById('download').onclick=async function(){
             if(!userImg){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
             const filename='mohim-reunion-2027.png';
             try{
@@ -58,18 +58,14 @@ jobs:
                 alert('ছবি তৈরি করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
               }
             }
-          };'''
-          pattern=r"document\.getElementById\(['"]download['"]\)\.onclick\s*=.*?\n\};"
-          s2,n=re.subn(pattern,"",s,flags=re.S)
-          if n < 1:
-              raise SystemExit(f"download handler not found: {n}")
-          marker="</script>"
-          pos=s2.rfind(marker)
-          if pos < 0:
-              raise SystemExit("closing script tag not found")
-          s2=s2[:pos]+new+"\n"+s2[pos:]
-          p.write_text(s2,encoding="utf-8")
-          print("Removed handlers:",n)
+          };
+          </script>'''
+          if "mohim-reunion-2027.png" in s and "showSaveFilePicker" in s:
+              print("Final handler already present")
+          else:
+              s=s.replace("</body>",new+"\n</body>")
+              p.write_text(s,encoding="utf-8")
+              print("Final handler installed")
           PY
       - name: Commit
         run: |
@@ -77,5 +73,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Make PNG download reliable [skip ci]"
+          git commit -m "Install reliable PNG download [skip ci]"
           git push
