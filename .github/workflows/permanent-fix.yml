@@ -66,7 +66,7 @@ jobs:
     }
   }
 };"""
-          pattern = r"document\.getElementById\(['"]download['"]\)\.onclick\s*=.*?\n};"
+          pattern = r"document\.getElementById\('download'\)\.onclick\s*=.*?\n};"
           s2, n = re.subn(pattern, new, s, count=1, flags=re.S)
           if n != 1:
               raise SystemExit("Download handler not found")
