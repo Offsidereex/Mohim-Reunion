@@ -10,62 +10,85 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install final download handler
+      - name: Append final mobile-safe download handler
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          new=r'''<script>
-          document.getElementById('download').onclick=async function(){
-            if(!userImg){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
-            const filename='mohim-reunion-2027.png';
-            try{
-              const blob=await new Promise((resolve,reject)=>{
-                canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png');
-              });
-              if(window.showSaveFilePicker){
-                const handle=await window.showSaveFilePicker({
-                  suggestedName:filename,
-                  types:[{description:'PNG Image',accept:{'image/png':['.png']}}]
-                });
-                const writable=await handle.createWritable();
-                await writable.write(blob);
-                await writable.close();
+          marker="<!-- FINAL-MOBILE-DOWNLOAD-FIX -->"
+          if marker in s:
+              print("Final download fix already present")
+          else:
+              new=r'''<!-- FINAL-MOBILE-DOWNLOAD-FIX -->
+          <script>
+          (function(){
+            const btn=document.getElementById('download');
+            if(!btn) return;
+            btn.onclick=async function(){
+              if(!window.userImg && typeof userImg==='undefined'){
+                alert('আগে একটি ছবি নির্বাচন করুন।');
                 return;
               }
-              const url=URL.createObjectURL(blob);
-              const a=document.createElement('a');
-              a.href=url;
-              a.download=filename;
-              a.style.position='fixed';
-              a.style.left='-9999px';
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              setTimeout(()=>URL.revokeObjectURL(url),60000);
-            }catch(err){
-              if(err && err.name==='AbortError') return;
+              const img=window.userImg || userImg;
+              if(!img){
+                alert('আগে একটি ছবি নির্বাচন করুন।');
+                return;
+              }
+              const cvs=window.canvas || (typeof canvas!=='undefined' ? canvas : null);
+              if(!cvs){
+                alert('ছবি তৈরি করা যাচ্ছে না।');
+                return;
+              }
+              const filename='mohim-reunion-2027.png';
               try{
                 const blob=await new Promise((resolve,reject)=>{
-                  canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png');
+                  cvs.toBlob(function(b){
+                    if(b) resolve(b); else reject(new Error('PNG তৈরি হয়নি'));
+                  },'image/png');
                 });
+                if(window.showSaveFilePicker){
+                  const handle=await window.showSaveFilePicker({
+                    suggestedName:filename,
+                    types:[{description:'PNG Image',accept:{'image/png':['.png']}}]
+                  });
+                  const writable=await handle.createWritable();
+                  await writable.write(blob);
+                  await writable.close();
+                  return;
+                }
                 const url=URL.createObjectURL(blob);
-                const w=window.open(url,'_blank');
-                if(!w) alert('ডাউনলোড ব্লক হয়েছে। নতুন ট্যাবে খোলা ছবিতে চাপ দিয়ে Download/Save Image করুন।');
-                setTimeout(()=>URL.revokeObjectURL(url),60000);
-              }catch(e){
-                alert('ছবি তৈরি করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
+                const a=document.createElement('a');
+                a.href=url;
+                a.download=filename;
+                a.rel='noopener';
+                a.style.display='none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function(){a.remove();URL.revokeObjectURL(url);},60000);
+              }catch(err){
+                if(err && err.name==='AbortError') return;
+                try{
+                  const blob=await new Promise((resolve,reject)=>{
+                    cvs.toBlob(function(b){b?resolve(b):reject(new Error('PNG তৈরি হয়নি'));},'image/png');
+                  });
+                  const url=URL.createObjectURL(blob);
+                  const w=window.open(url,'_blank');
+                  if(!w){
+                    alert('ডাউনলোড ব্লক হয়েছে। ছবিটি নতুন ট্যাবে খুলে গেলে সেটি চাপ দিয়ে Download/Save Image করুন।');
+                  }
+                }catch(e){
+                  alert('ছবি ডাউনলোড করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
+                }
               }
-            }
-          };
+            };
+          })();
           </script>'''
-          if "mohim-reunion-2027.png" in s and "showSaveFilePicker" in s:
-              print("Final handler already present")
-          else:
-              s=s.replace("</body>",new+"\n</body>")
+              if "</body>" not in s:
+                  raise SystemExit("body tag not found")
+              s=s.replace("</body>",new+"\n</body>",1)
               p.write_text(s,encoding="utf-8")
-              print("Final handler installed")
+              print("Final mobile download fix appended")
           PY
       - name: Commit
         run: |
@@ -73,5 +96,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Install reliable PNG download [skip ci]"
+          git commit -m "Add final mobile PNG download fix [skip ci]"
           git push
