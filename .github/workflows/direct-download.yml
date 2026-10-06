@@ -1,0 +1,49 @@
+name: Apply direct PNG download
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace download handler
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          new=r'''document.getElementById('download').onclick=()=>{
+            if(!userImg){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
+            try{
+              const dataURL=canvas.toDataURL('image/png');
+              const a=document.createElement('a');
+              a.href=dataURL;
+              a.download='mohim-reunion-2027.png';
+              a.style.display='none';
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+            }catch(err){
+              alert('ছবি ডাউনলোড করা যাচ্ছে না। অনুগ্রহ করে Chrome দিয়ে আবার চেষ্টা করুন।');
+            }
+          };'''
+          pattern=r"document\.getElementById\('download'\)\.onclick=async\(\)=>\{.*?\n\};(?=\n</script>)"
+          s2,n=re.subn(pattern,new,s,count=1,flags=re.S)
+          if n!=1:
+              raise SystemExit(f"download handler not found: {n}")
+          p.write_text(s2,encoding="utf-8")
+          print("Direct download handler installed")
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Make PNG download direct [skip ci]"
+          git push
