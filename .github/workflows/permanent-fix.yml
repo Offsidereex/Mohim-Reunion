@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/permanent-fix.yml
+      - index.html
   workflow_dispatch:
 
 permissions:
@@ -15,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Replace download handler
+      - name: Replace all download handlers
         run: |
-          python3 - <<'PY2'
+          python3 - <<'PY'
           from pathlib import Path
           import re
           p = Path("index.html")
@@ -26,27 +27,25 @@ jobs:
   if(!userImg){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
   const filename='mohim-reunion-2027.png';
   try{
+    const blob=await new Promise((resolve,reject)=>{
+      canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png');
+    });
     if(window.showSaveFilePicker){
       const handle=await window.showSaveFilePicker({
         suggestedName:filename,
         types:[{description:'PNG Image',accept:{'image/png':['.png']}}]
       });
       const writable=await handle.createWritable();
-      const blob=await new Promise((resolve,reject)=>{
-        canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png');
-      });
       await writable.write(blob);
       await writable.close();
       return;
     }
-    const blob=await new Promise((resolve,reject)=>{
-      canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png');
-    });
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
     a.href=url;
     a.download=filename;
-    a.rel='noopener';
+    a.style.position='fixed';
+    a.style.left='-9999px';
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -59,19 +58,21 @@ jobs:
       });
       const url=URL.createObjectURL(blob);
       const w=window.open(url,'_blank');
-      if(!w) alert('ডাউনলোড ব্লক হয়েছে। ব্রাউজারের Download/Pop-up অনুমতি দিন।');
+      if(!w) alert('ডাউনলোড ব্লক হয়েছে। নতুন ট্যাবে খোলা ছবিতে চাপ দিয়ে Download/Save Image করুন।');
       setTimeout(()=>URL.revokeObjectURL(url),60000);
     }catch(e){
-      alert('ছবি তৈরি করা যাচ্ছে না। Chrome/Edge দিয়ে আবার চেষ্টা করুন।');
+      alert('ছবি তৈরি করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
     }
   }
 };"""
-          pattern = r"document\.getElementById\('download'\)\.onclick\s*=.*?\n};"
-          s2, n = re.subn(pattern, new, s, count=1, flags=re.S)
-          if n != 1:
-              raise SystemExit("Download handler not found")
+          pattern = r"document\.getElementById\(['"]download['"]\)\.onclick\s*=.*?\n};"
+          s2, n = re.subn(pattern, "", s, flags=re.S)
+          if n < 1:
+              raise SystemExit("No download handler found")
+          s2 += "\n<script>\n" + new + "\n</script>\n"
           p.write_text(s2, encoding="utf-8")
-          PY2
+          print("Removed handlers:", n)
+          PY
       - name: Commit patched index
         run: |
           git config user.name "github-actions[bot]"
