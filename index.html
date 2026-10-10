@@ -1,168 +1,97 @@
 <!doctype html>
 <html lang="bn">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#102b68">
 <meta name="description" content="মহিম ইন্সটিটিউশন পুনর্মিলন ২০২৭ — নিজের ছবি দিয়ে ফ্রেম তৈরি করুন ও ডাউনলোড করুন।">
 <title>মহিম ইন্সটিটিউশন পুনর্মিলন ২০২৭</title>
-<link rel="icon" type="image/png" href="site-icon.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="site-icon.png">
 <style>
-:root{color-scheme:light;--navy:#102b68;--blue:#087ed0;--yellow:#ffe600}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;background:#f2f6fc;color:#13254a}
-header{background:linear-gradient(120deg,#0b1e4c,#174c9a);color:#fff;text-align:center;padding:25px 16px 22px}
-header img{width:62px;height:62px;object-fit:cover;border-radius:50%;background:#fff;border:2px solid #fff}
-h1{font-size:clamp(1.35rem,4vw,2.1rem);margin:9px 0 4px}header p{margin:0;color:#dce8ff}
-main{max-width:1000px;margin:22px auto;padding:0 14px 32px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:22px}
-.panel{background:#fff;border-radius:18px;padding:18px;box-shadow:0 8px 28px #18396d12;min-width:0}
-.preview-wrap{background:#e8eef8;border-radius:12px;padding:8px;display:flex;justify-content:center}
-canvas{display:block;width:100%;max-width:600px;height:auto;border-radius:6px;background:#102b68}
-h2{font-size:1.12rem;margin:0 0 14px}.field{margin:14px 0}label{display:block;font-weight:700;margin-bottom:7px}
-input[type=file]{width:100%;padding:10px;border:1px solid #d5deeb;border-radius:10px;background:#fff}
-input[type=range]{width:100%;accent-color:#087ed0}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}
-button{border:0;border-radius:11px;padding:12px 10px;font-size:1rem;font-weight:750;cursor:pointer;background:#e7eef9;color:#102b68}
-button.primary{background:#087ed0;color:white;grid-column:1/-1}
-button:active{transform:scale(.99)}.hint{font-size:.88rem;line-height:1.65;color:#5c6b83}
-footer{text-align:center;color:#61718a;padding:0 16px 24px;font-size:.85rem}
-@media(max-width:720px){main{grid-template-columns:1fr;margin-top:14px}.panel{padding:14px}header{padding:20px 12px}canvas{max-width:520px}}
-</style></head>
+:root{font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif;color:#17284c;background:#f2f6fc}
+*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(120deg,#0b1e4c,#174c9a);color:white;text-align:center;padding:22px 14px}
+header img{width:58px;height:58px;border-radius:50%;object-fit:cover;background:white;border:2px solid white}h1{font-size:clamp(1.3rem,4vw,2rem);margin:8px 0 4px}header p{margin:0;color:#dce8ff}
+main{max-width:1000px;margin:20px auto;padding:0 14px 28px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:20px}
+.panel{background:#fff;border-radius:16px;padding:17px;box-shadow:0 8px 28px #18396d12;min-width:0}.preview{background:#e8eef8;border-radius:12px;padding:7px;display:flex;justify-content:center}
+canvas{display:block;width:100%;max-width:600px;height:auto;background:#102b68;touch-action:none}h2{font-size:1.1rem;margin:0 0 12px}.field{margin:14px 0}label{display:block;font-weight:700;margin-bottom:6px}input[type=file]{width:100%;padding:9px;border:1px solid #d5deeb;border-radius:9px}input[type=range]{width:100%;accent-color:#087ed0}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}button{border:0;border-radius:10px;padding:12px 9px;font-size:1rem;font-weight:750;cursor:pointer;background:#e7eef9;color:#102b68}button.primary{background:#087ed0;color:white;grid-column:1/-1}.hint{font-size:.88rem;line-height:1.65;color:#5c6b83}footer{text-align:center;color:#61718a;padding:0 16px 24px;font-size:.85rem;line-height:1.9}
+@media(max-width:720px){main{grid-template-columns:1fr;margin-top:13px}.panel{padding:13px}header{padding:18px 10px}}
+</style>
+</head>
 <body>
-<header><img src="site-icon.png" alt="মহিম ইন্সটিটিউশন লোগো"><h1>মহিম ইন্সটিটিউশন পুনর্মিলন ২০২৭</h1><p>আপনার ছবি যোগ করুন, ফ্রেম তৈরি করুন এবং ডাউনলোড করুন</p></header>
+<header><img src="site-icon.png" alt="মহিম ইন্সটিটিউশন লোগো"><h1>মহিম ইন্সটিটিউশন পুনর্মিলন ২০২৭</h1><p>নিজের ছবি যোগ করুন, ফ্রেম তৈরি করুন এবং ডাউনলোড করুন</p></header>
 <main>
-<section class="panel"><h2>আপনার ফ্রেম</h2><div class="preview-wrap"><canvas id="canvas" width="1536" height="1536" aria-label="ফ্রেম প্রিভিউ"></canvas></div><p class="hint">ছবি আপলোড করার পর প্রিভিউতে আঙুল/মাউস দিয়ে টেনে ছবির অবস্থান বদলান।</p></section>
+<section class="panel"><h2>ফ্রেম প্রিভিউ</h2><div class="preview"><canvas id="canvas" width="1536" height="1536" aria-label="ফ্রেম প্রিভিউ"></canvas></div><p class="hint">ছবি যোগ করার পর প্রিভিউয়ের ওপর আঙুল/মাউস চেপে ধরে টেনে ছবির অবস্থান ঠিক করুন।</p></section>
 <section class="panel"><h2>ছবি সেটিংস</h2>
 <div class="field"><label for="photo">১. আপনার ছবি নির্বাচন করুন</label><input id="photo" type="file" accept="image/*"></div>
-<div class="field"><label for="zoom">২. ছবির আকার <span id="zoomVal">100%</span></label><input id="zoom" type="range" min="70" max="220" value="100"></div>
+<div class="field"><label for="zoom">২. ছবির আকার: <span id="zoomVal">100%</span></label><input id="zoom" type="range" min="70" max="220" value="100"></div>
 <div class="field"><label for="xpos">৩. ডানে-বামে সরান</label><input id="xpos" type="range" min="-350" max="350" value="0"></div>
 <div class="field"><label for="ypos">৪. উপরে-নিচে সরান</label><input id="ypos" type="range" min="-350" max="350" value="0"></div>
-<div class="actions"><button id="reset">রিসেট</button><button id="install" hidden>অ্যাপ ইনস্টল</button><button id="download" class="primary">ফ্রেমসহ ছবি ডাউনলোড</button></div>
-<p class="hint">Android, iPhone/iPad, Windows, Mac ও অন্যান্য কম্পিউটারে ব্যবহার করা যাবে। ডাউনলোড হওয়া ছবি PNG ফরম্যাটে থাকবে। iPhone-এ চাইলে Safari-এর Share মেনু থেকে “Add to Home Screen” ব্যবহার করুন।</p>
-</section></main>
-<footer style="padding:18px 16px 28px;line-height:1.9">
+<div class="actions"><button id="reset" type="button">রিসেট</button><button id="download" class="primary" type="button">ফ্রেমসহ ছবি ডাউনলোড</button></div>
+<p class="hint">ছবি নির্বাচন না করে ডাউনলোড হবে না। ডাউনলোড বাটনে চাপলে PNG ছবি তৈরি হবে।</p>
+</section>
+</main>
+<footer>
 <div><strong>Creator Name:</strong> Redwan Uddin</div>
 <div><strong>Graphic Design:</strong> Reex GFX</div>
 <div><strong>Help By:</strong> SSC BATCH 2K25</div>
 <div><a href="https://www.facebook.com/share/19aomEA29Y/" target="_blank" rel="noopener noreferrer" style="color:#087ed0;font-weight:700">পুনর্মিলনের Facebook Page</a></div>
-<div>© Mohim Institution Reunion 2027 · SSC Batch 2K25</div>
+<div>© Celebrating 88 Years Of Mohim Institution, Faridpur 2026 ® SSC Batch 2K25</div>
 </footer>
 <script>
-const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
-const frame=new Image();frame.src='frame-overlay.png';
-let photo=new Image(),hasPhoto=false,zoom=100,dx=0,dy=0,drag=false,lastX=0,lastY=0;
+(()=> {
+'use strict';
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+const fileInput=document.getElementById('photo');
+const zoomInput=document.getElementById('zoom');
+const xInput=document.getElementById('xpos');
+const yInput=document.getElementById('ypos');
+const zoomVal=document.getElementById('zoomVal');
+const frame=new Image();
+frame.src='frame-overlay.png';
+let photo=null,zoom=100,dx=0,dy=0,dragging=false,last=null;
+const cx=768,cy=775,r=525;
 function draw(){
  ctx.clearRect(0,0,canvas.width,canvas.height);
- if(hasPhoto){
-  const cx=768,cy=775,r=525;
+ if(photo){
   ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
-  const scale=Math.max((2*r)/photo.width,(2*r)/photo.height)*(zoom/100);
-  const dw=photo.width*scale,dh=photo.height*scale;
-  ctx.drawImage(photo,cx-dw/2+dx,cy-dh/2+dy,dw,dh);ctx.restore();
+  const scale=Math.max((2*r)/photo.naturalWidth,(2*r)/photo.naturalHeight)*(zoom/100);
+  const w=photo.naturalWidth*scale,h=photo.naturalHeight*scale;
+  ctx.drawImage(photo,cx-w/2+dx,cy-h/2+dy,w,h);
+  ctx.restore();
  }
  if(frame.complete&&frame.naturalWidth)ctx.drawImage(frame,0,0,canvas.width,canvas.height);
 }
 frame.onload=draw;
-document.getElementById('photo').addEventListener('change',e=>{
- const file=e.target.files&&e.target.files[0];if(!file)return;
- const url=URL.createObjectURL(file);photo=new Image();
- photo.onload=()=>{hasPhoto=true;zoom=100;dx=0;dy=0;document.getElementById('zoom').value=100;document.getElementById('xpos').value=0;document.getElementById('ypos').value=0;document.getElementById('zoomVal').textContent='100%';draw();URL.revokeObjectURL(url)};
- photo.src=url;
+fileInput.addEventListener('change',()=>{
+ const file=fileInput.files&&fileInput.files[0];if(!file)return;
+ if(!file.type.startsWith('image/')){alert('অনুগ্রহ করে একটি ছবি নির্বাচন করুন।');return;}
+ const reader=new FileReader();
+ reader.onload=()=>{const img=new Image();img.onload=()=>{photo=img;zoom=100;dx=0;dy=0;zoomInput.value=100;xInput.value=0;yInput.value=0;zoomVal.textContent='100%';draw()};img.onerror=()=>alert('ছবিটি খোলা যাচ্ছে না। অন্য ছবি চেষ্টা করুন।');img.src=reader.result};
+ reader.onerror=()=>alert('ছবি পড়া যায়নি। আবার চেষ্টা করুন।');reader.readAsDataURL(file);
 });
-document.getElementById('zoom').addEventListener('input',e=>{zoom=+e.target.value;document.getElementById('zoomVal').textContent=zoom+'%';draw()});
-document.getElementById('xpos').addEventListener('input',e=>{dx=+e.target.value*1.2;draw()});
-document.getElementById('ypos').addEventListener('input',e=>{dy=+e.target.value*1.2;draw()});
-document.getElementById('reset').onclick=()=>{zoom=100;dx=0;dy=0;for(const [id,v] of [['zoom',100],['xpos',0],['ypos',0]])document.getElementById(id).value=v;document.getElementById('zoomVal').textContent='100%';draw()};
-function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
-canvas.addEventListener('pointerdown',e=>{if(!hasPhoto)return;drag=true;lastX=point(e).x;lastY=point(e).y;canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(!drag)return;const p=point(e);dx+=p.x-lastX;dy+=p.y-lastY;lastX=p.x;lastY=p.y;document.getElementById('xpos').value=Math.max(-350,Math.min(350,dx/1.2));document.getElementById('ypos').value=Math.max(-350,Math.min(350,dy/1.2));draw()});
-canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('pointercancel',()=>drag=false);
-document.getElementById('download').onclick=()=>{
- if(!hasPhoto || !photo.naturalWidth){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
+zoomInput.addEventListener('input',()=>{zoom=Number(zoomInput.value);zoomVal.textContent=zoom+'%';draw()});
+xInput.addEventListener('input',()=>{dx=Number(xInput.value)*1.2;draw()});
+yInput.addEventListener('input',()=>{dy=Number(yInput.value)*1.2;draw()});
+document.getElementById('reset').addEventListener('click',()=>{zoom=100;dx=0;dy=0;zoomInput.value=100;xInput.value=0;yInput.value=0;zoomVal.textContent='100%';draw()});
+function point(e){const b=canvas.getBoundingClientRect();return{x:(e.clientX-b.left)*canvas.width/b.width,y:(e.clientY-b.top)*canvas.height/b.height}}
+canvas.addEventListener('pointerdown',e=>{if(!photo)return;dragging=true;last=point(e);canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!dragging||!last)return;const p=point(e);dx+=p.x-last.x;dy+=p.y-last.y;last=p;xInput.value=Math.max(-350,Math.min(350,dx/1.2));yInput.value=Math.max(-350,Math.min(350,dy/1.2));draw()});
+function stopDrag(){dragging=false;last=null}
+canvas.addEventListener('pointerup',stopDrag);canvas.addEventListener('pointercancel',stopDrag);
+document.getElementById('download').addEventListener('click',()=>{
+ if(!photo||!photo.naturalWidth){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
  draw();
- canvas.toBlob(blob=>{
+ try{canvas.toBlob(blob=>{
   if(!blob){alert('ছবি তৈরি হয়নি। আবার চেষ্টা করুন।');return;}
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='Mohim-Reunion-2027.png';
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),10000);
- },'image/png');
-};
-let deferredPrompt;const installBtn=document.getElementById('install');
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBtn.hidden=false});
-installBtn.onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.hidden=true}else alert('ব্রাউজারের মেনু থেকে “Add to Home Screen” বা “Install app” বেছে নিন।')};
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='Mohim-Reunion-2027.png';a.style.display='none';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+ },'image/png')}catch(e){alert('ডাউনলোড করা যায়নি। ছবিটি আবার নির্বাচন করে চেষ্টা করুন।')}
+});
 draw();
-</script></body></html>
-<!-- FINAL-MOBILE-DOWNLOAD-FIX -->
-<script>
-(function(){
-  const btn=document.getElementById('download');
-  if(!btn) return;
-  btn.onclick=async function(){
-    if(!window.userImg && typeof userImg==='undefined'){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
-    const cvs=window.canvas || (typeof canvas!=='undefined' ? canvas : null);
-    if(!cvs){alert('ছবি তৈরি করা যাচ্ছে না।');return;}
-    const filename='mohim-reunion-2027.png';
-    try{
-      const blob=await new Promise((resolve,reject)=>cvs.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png'));
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download=filename; a.rel='noopener';
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},60000);
-    }catch(err){
-      alert('ছবি ডাউনলোড করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
-    }
-  };
 })();
 </script>
-
-<!-- FINAL-MOBILE-DOWNLOAD-FIX -->
-<script>
-(function(){
-  const btn=document.getElementById('download');
-  if(!btn) return;
-  btn.onclick=async function(){
-    if(!window.userImg && typeof userImg==='undefined'){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
-    const cvs=window.canvas || (typeof canvas!=='undefined' ? canvas : null);
-    if(!cvs){alert('ছবি তৈরি করা যাচ্ছে না।');return;}
-    const filename='mohim-reunion-2027.png';
-    try{
-      const blob=await new Promise((resolve,reject)=>cvs.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png'));
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download=filename; a.rel='noopener';
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},60000);
-    }catch(err){
-      alert('ছবি ডাউনলোড করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
-    }
-  };
-})();
-</script>
-
-<!-- FINAL-MOBILE-DOWNLOAD-FIX -->
-<script>
-(function(){
-  const btn=document.getElementById('download');
-  if(!btn) return;
-  btn.onclick=async function(){
-    if(!window.userImg && typeof userImg==='undefined'){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
-    const cvs=window.canvas || (typeof canvas!=='undefined' ? canvas : null);
-    if(!cvs){alert('ছবি তৈরি করা যাচ্ছে না।');return;}
-    const filename='mohim-reunion-2027.png';
-    try{
-      const blob=await new Promise((resolve,reject)=>cvs.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png'));
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download=filename; a.rel='noopener';
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},60000);
-    }catch(err){
-      alert('ছবি ডাউনলোড করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
-    }
-  };
-})();
-</script>
+</body>
+</html>
