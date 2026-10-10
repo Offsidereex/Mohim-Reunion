@@ -90,6 +90,13 @@ document.getElementById('download').addEventListener('click',()=>{
  },'image/png');
 });
 draw();
+// Clear old cached app copies that may contain the previous broken download handler.
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+ window.addEventListener('load',async()=>{
+  try{const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()));}catch(e){}
+  try{const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)));}catch(e){}
+ });
+}
 })();
 </script>
 </body>
