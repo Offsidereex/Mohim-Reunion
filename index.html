@@ -104,11 +104,20 @@ canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('poi
 document.getElementById('download').addEventListener('click',()=>{
  if(!hasPhoto||!photo.naturalWidth){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
  draw();
+ // Open a fallback tab directly during the tap gesture; some mobile browsers
+ // ignore the download attribute for generated canvas files.
+ let imageTab=null;
+ const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+ if(isMobile){try{imageTab=window.open('about:blank','_blank');}catch(e){}}
  canvas.toBlob(blob=>{
-  if(!blob){alert('ডাউনলোড করা যায়নি। আবার চেষ্টা করুন।');return;}
-  const url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='Mohim-Reunion-2027.png';a.style.display='none';document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  if(!blob){if(imageTab)imageTab.close();alert('ডাউনলোড করা যায়নি। আবার চেষ্টা করুন।');return;}
+  const url=URL.createObjectURL(blob);
+  if(imageTab){try{imageTab.location.href=url;}catch(e){}}
+  const a=document.createElement('a');
+  a.href=url;a.download='Mohim-Reunion-2027.png';a.style.display='none';
+  document.body.appendChild(a);a.click();a.remove();
+  // Keep the image URL alive longer so it can be saved from the fallback tab.
+  setTimeout(()=>{if(!imageTab||imageTab.closed)URL.revokeObjectURL(url);},120000);
  },'image/png');
 });
 draw();
