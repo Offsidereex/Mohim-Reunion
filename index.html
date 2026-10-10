@@ -40,7 +40,13 @@ footer{text-align:center;color:#61718a;padding:0 16px 24px;font-size:.85rem}
 <div class="actions"><button id="reset">রিসেট</button><button id="install" hidden>অ্যাপ ইনস্টল</button><button id="download" class="primary">ফ্রেমসহ ছবি ডাউনলোড</button></div>
 <p class="hint">Android, iPhone/iPad, Windows, Mac ও অন্যান্য কম্পিউটারে ব্যবহার করা যাবে। ডাউনলোড হওয়া ছবি PNG ফরম্যাটে থাকবে। iPhone-এ চাইলে Safari-এর Share মেনু থেকে “Add to Home Screen” ব্যবহার করুন।</p>
 </section></main>
-<footer>© Mohim Institution Reunion 2027 · SSC Batch 2K25</footer>
+<footer style="padding:18px 16px 28px;line-height:1.9">
+<div><strong>Creator Name:</strong> Redwan Uddin</div>
+<div><strong>Graphic Design:</strong> Reex GFX</div>
+<div><strong>Help By:</strong> SSC BATCH 2K25</div>
+<div><a href="https://www.facebook.com/share/19aomEA29Y/" target="_blank" rel="noopener noreferrer" style="color:#087ed0;font-weight:700">পুনর্মিলনের Facebook Page</a></div>
+<div>© Mohim Institution Reunion 2027 · SSC Batch 2K25</div>
+</footer>
 <script>
 const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
 const frame=new Image();frame.src='frame-overlay.png';
@@ -48,7 +54,7 @@ let photo=new Image(),hasPhoto=false,zoom=100,dx=0,dy=0,drag=false,lastX=0,lastY
 function draw(){
  ctx.clearRect(0,0,canvas.width,canvas.height);
  if(hasPhoto){
-  const cx=768,cy=775,r=565;
+  const cx=768,cy=775,r=525;
   ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
   const scale=Math.max((2*r)/photo.width,(2*r)/photo.height)*(zoom/100);
   const dw=photo.width*scale,dh=photo.height*scale;
@@ -78,26 +84,3 @@ installBtn.onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await de
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 draw();
 </script></body></html>
-<!-- FINAL-MOBILE-DOWNLOAD-FIX -->
-<script>
-(function(){
-  const btn=document.getElementById('download');
-  if(!btn) return;
-  btn.onclick=async function(){
-    if(!window.userImg && typeof userImg==='undefined'){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
-    const cvs=window.canvas || (typeof canvas!=='undefined' ? canvas : null);
-    if(!cvs){alert('ছবি তৈরি করা যাচ্ছে না।');return;}
-    const filename='mohim-reunion-2027.png';
-    try{
-      const blob=await new Promise((resolve,reject)=>cvs.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png'));
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download=filename; a.rel='noopener';
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},60000);
-    }catch(err){
-      alert('ছবি ডাউনলোড করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
-    }
-  };
-})();
-</script>
