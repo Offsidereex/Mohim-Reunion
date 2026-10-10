@@ -50,45 +50,44 @@ const yInput=document.getElementById('ypos');
 const zoomVal=document.getElementById('zoomVal');
 const frame=new Image();
 frame.src='frame-overlay.png';
-let photo=null,zoom=100,dx=0,dy=0,dragging=false,last=null;
-const cx=768,cy=775,r=525;
+let photo=new Image(),hasPhoto=false,zoom=100,dx=0,dy=0,drag=false,lastX=0,lastY=0;
 function draw(){
  ctx.clearRect(0,0,canvas.width,canvas.height);
- if(photo){
+ if(hasPhoto){
+  const cx=768,cy=775,r=525;
   ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
   const scale=Math.max((2*r)/photo.naturalWidth,(2*r)/photo.naturalHeight)*(zoom/100);
-  const w=photo.naturalWidth*scale,h=photo.naturalHeight*scale;
-  ctx.drawImage(photo,cx-w/2+dx,cy-h/2+dy,w,h);
-  ctx.restore();
+  const dw=photo.naturalWidth*scale,dh=photo.naturalHeight*scale;
+  ctx.drawImage(photo,cx-dw/2+dx,cy-dh/2+dy,dw,dh);ctx.restore();
  }
  if(frame.complete&&frame.naturalWidth)ctx.drawImage(frame,0,0,canvas.width,canvas.height);
 }
 frame.onload=draw;
-fileInput.addEventListener('change',()=>{
- const file=fileInput.files&&fileInput.files[0];if(!file)return;
+fileInput.addEventListener('change',e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
  if(!file.type.startsWith('image/')){alert('অনুগ্রহ করে একটি ছবি নির্বাচন করুন।');return;}
- const reader=new FileReader();
- reader.onload=()=>{const img=new Image();img.onload=()=>{photo=img;zoom=100;dx=0;dy=0;zoomInput.value=100;xInput.value=0;yInput.value=0;zoomVal.textContent='100%';draw()};img.onerror=()=>alert('ছবিটি খোলা যাচ্ছে না। অন্য ছবি চেষ্টা করুন।');img.src=reader.result};
- reader.onerror=()=>alert('ছবি পড়া যায়নি। আবার চেষ্টা করুন।');reader.readAsDataURL(file);
+ const url=URL.createObjectURL(file);photo=new Image();
+ photo.onload=()=>{hasPhoto=true;zoom=100;dx=0;dy=0;zoomInput.value=100;xInput.value=0;yInput.value=0;zoomVal.textContent='100%';draw();URL.revokeObjectURL(url)};
+ photo.onerror=()=>{URL.revokeObjectURL(url);alert('ছবিটি খোলা যাচ্ছে না। অন্য ছবি চেষ্টা করুন।')};
+ photo.src=url;
 });
-zoomInput.addEventListener('input',()=>{zoom=Number(zoomInput.value);zoomVal.textContent=zoom+'%';draw()});
-xInput.addEventListener('input',()=>{dx=Number(xInput.value)*1.2;draw()});
-yInput.addEventListener('input',()=>{dy=Number(yInput.value)*1.2;draw()});
+zoomInput.addEventListener('input',e=>{zoom=Number(e.target.value);zoomVal.textContent=zoom+'%';draw()});
+xInput.addEventListener('input',e=>{dx=Number(e.target.value)*1.2;draw()});
+yInput.addEventListener('input',e=>{dy=Number(e.target.value)*1.2;draw()});
 document.getElementById('reset').addEventListener('click',()=>{zoom=100;dx=0;dy=0;zoomInput.value=100;xInput.value=0;yInput.value=0;zoomVal.textContent='100%';draw()});
 function point(e){const b=canvas.getBoundingClientRect();return{x:(e.clientX-b.left)*canvas.width/b.width,y:(e.clientY-b.top)*canvas.height/b.height}}
-canvas.addEventListener('pointerdown',e=>{if(!photo)return;dragging=true;last=point(e);canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(!dragging||!last)return;const p=point(e);dx+=p.x-last.x;dy+=p.y-last.y;last=p;xInput.value=Math.max(-350,Math.min(350,dx/1.2));yInput.value=Math.max(-350,Math.min(350,dy/1.2));draw()});
-function stopDrag(){dragging=false;last=null}
-canvas.addEventListener('pointerup',stopDrag);canvas.addEventListener('pointercancel',stopDrag);
+canvas.addEventListener('pointerdown',e=>{if(!hasPhoto)return;drag=true;const p=point(e);lastX=p.x;lastY=p.y;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;const p=point(e);dx+=p.x-lastX;dy+=p.y-lastY;lastX=p.x;lastY=p.y;xInput.value=Math.max(-350,Math.min(350,dx/1.2));yInput.value=Math.max(-350,Math.min(350,dy/1.2));draw()});
+canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('pointercancel',()=>drag=false);
 document.getElementById('download').addEventListener('click',()=>{
- if(!photo||!photo.naturalWidth){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
+ if(!hasPhoto||!photo.naturalWidth){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
  draw();
- try{canvas.toBlob(blob=>{
-  if(!blob){alert('ছবি তৈরি হয়নি। আবার চেষ্টা করুন।');return;}
+ canvas.toBlob(blob=>{
+  if(!blob){alert('ডাউনলোড করা যায়নি। আবার চেষ্টা করুন।');return;}
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='Mohim-Reunion-2027.png';a.style.display='none';document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),30000);
- },'image/png')}catch(e){alert('ডাউনলোড করা যায়নি। ছবিটি আবার নির্বাচন করে চেষ্টা করুন।')}
+ },'image/png');
 });
 draw();
 })();
