@@ -49,6 +49,21 @@ const xInput=document.getElementById('xpos');
 const yInput=document.getElementById('ypos');
 const zoomVal=document.getElementById('zoomVal');
 const frame=new Image();
+const frameCanvas=document.createElement('canvas');
+const frameCtx=frameCanvas.getContext('2d');
+frame.onload=()=>{
+ frameCanvas.width=frame.naturalWidth;frameCanvas.height=frame.naturalHeight;
+ frameCtx.drawImage(frame,0,0);
+ // The original overlay has a solid black circle baked into the PNG.
+ // Make only near-black pixels transparent so the uploaded photo shows through.
+ const imageData=frameCtx.getImageData(0,0,frameCanvas.width,frameCanvas.height);
+ const pixels=imageData.data;
+ for(let i=0;i<pixels.length;i+=4){
+  if(pixels[i]<8&&pixels[i+1]<8&&pixels[i+2]<8){pixels[i+3]=0;}
+ }
+ frameCtx.putImageData(imageData,0,0);
+ draw();
+};
 frame.src='frame-overlay.png';
 let photo=new Image(),hasPhoto=false,zoom=100,dx=0,dy=0,drag=false,lastX=0,lastY=0;
 function draw(){
@@ -68,9 +83,8 @@ function draw(){
   ctx.drawImage(photo,cx-fw/2+dx,cy-fh/2+dy,fw,fh);
   ctx.restore();
  }
- if(frame.complete&&frame.naturalWidth)ctx.drawImage(frame,0,0,canvas.width,canvas.height);
+ if(frameCanvas.width)ctx.drawImage(frameCanvas,0,0,canvas.width,canvas.height);
 }
-frame.onload=draw;
 fileInput.addEventListener('change',e=>{
  const file=e.target.files&&e.target.files[0];if(!file)return;
  if(!file.type.startsWith('image/')){alert('অনুগ্রহ করে একটি ছবি নির্বাচন করুন।');return;}
