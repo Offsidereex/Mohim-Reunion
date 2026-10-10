@@ -84,27 +84,3 @@ installBtn.onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await de
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 draw();
 </script></body></html>
-
-<!-- FINAL-MOBILE-DOWNLOAD-FIX -->
-<script>
-(function(){
-  const btn=document.getElementById('download');
-  if(!btn) return;
-  btn.onclick=async function(){
-    if(!window.userImg && typeof userImg==='undefined'){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
-    const cvs=window.canvas || (typeof canvas!=='undefined' ? canvas : null);
-    if(!cvs){alert('ছবি তৈরি করা যাচ্ছে না।');return;}
-    const filename='mohim-reunion-2027.png';
-    try{
-      const blob=await new Promise((resolve,reject)=>cvs.toBlob(b=>b?resolve(b):reject(new Error('PNG তৈরি হয়নি')),'image/png'));
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url; a.download=filename; a.rel='noopener';
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},60000);
-    }catch(err){
-      alert('ছবি ডাউনলোড করা যাচ্ছে না। Chrome দিয়ে আবার চেষ্টা করুন।');
-    }
-  };
-})();
-</script>
