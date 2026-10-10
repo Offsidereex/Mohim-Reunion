@@ -101,34 +101,43 @@ function point(e){const b=canvas.getBoundingClientRect();return{x:(e.clientX-b.l
 canvas.addEventListener('pointerdown',e=>{if(!hasPhoto)return;drag=true;const p=point(e);lastX=p.x;lastY=p.y;canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!drag)return;const p=point(e);dx+=p.x-lastX;dy+=p.y-lastY;lastX=p.x;lastY=p.y;xInput.value=Math.max(-350,Math.min(350,dx/1.2));yInput.value=Math.max(-350,Math.min(350,dy/1.2));draw()});
 canvas.addEventListener('pointerup',()=>drag=false);canvas.addEventListener('pointercancel',()=>drag=false);
-document.getElementById('download').addEventListener('click',async()=>{
+let saveObjectUrl=null;
+document.getElementById('download').addEventListener('click',()=>{
  if(!hasPhoto||!photo.naturalWidth){alert('আগে একটি ছবি নির্বাচন করুন।');return;}
  draw();
  const btn=document.getElementById('download');
- const oldLabel=btn.textContent;
  btn.disabled=true;btn.textContent='ছবি তৈরি হচ্ছে…';
  try{
-  const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('ছবি তৈরি হয়নি')),'image/png'));
-  const file=new File([blob],'Mohim-Reunion-2027.png',{type:'image/png'});
-  // On mobile, offer the native share/save sheet when supported.
-  if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-   try{await navigator.share({files:[file],title:'মহিম ইন্সটিটিউশন পুনর্মিলন ২০২৭',text:'ফ্রেমসহ আমার ছবি'});return;}catch(err){if(err&&err.name==='AbortError')return;}
-  }
-  // Reliable fallback: show the generated image right on this page so it can be saved with a long press.
-  const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);});
-  let saver=document.getElementById('savePreview');
-  if(!saver){
-   saver=document.createElement('div');saver.id='savePreview';
-   saver.style.cssText='position:fixed;inset:0;z-index:99999;background:#f2f6fc;overflow:auto;padding:18px;text-align:center;font-family:system-ui,sans-serif';
-   saver.innerHTML='<button id="closeSavePreview" type="button" style="float:right;background:#dce6f5;padding:10px 14px">বন্ধ করুন ✕</button><h2 style="clear:both;padding-top:12px">আপনার ফ্রেমসহ ছবি তৈরি হয়েছে</h2><p>ছবির ওপর আঙুল চেপে ধরুন, তারপর <b>Download image / ছবি ডাউনলোড</b> চাপুন।</p><img id="savePreviewImage" alt="ফ্রেমসহ ছবি" style="display:block;width:100%;max-width:600px;height:auto;margin:12px auto;border-radius:8px"><a id="savePreviewLink" download="Mohim-Reunion-2027.png" style="display:inline-block;margin:10px;padding:13px 18px;background:#087ed0;color:white;border-radius:8px;text-decoration:none;font-weight:bold">ছবি ডাউনলোড করুন</a><p style="color:#5c6b83">ডাউনলোড লিংক কাজ না করলে ছবির ওপর আঙুল চেপে ধরে সেভ করুন।</p>';
-   document.body.appendChild(saver);
-   document.getElementById('closeSavePreview').addEventListener('click',()=>saver.remove());
-  }
-  document.getElementById('savePreviewImage').src=dataUrl;
-  document.getElementById('savePreviewLink').href=dataUrl;
-  saver.style.display='block';
- }catch(err){alert('ছবি তৈরি করা যায়নি। পেজটি রিফ্রেশ করে আবার চেষ্টা করুন।');}
- finally{btn.disabled=false;btn.textContent=oldLabel;}
+  canvas.toBlob(blob=>{
+   btn.disabled=false;btn.textContent='ফ্রেমসহ ছবি ডাউনলোড';
+   if(!blob){alert('ছবি তৈরি করা যায়নি। আবার চেষ্টা করুন।');return;}
+   // Reuse one preview only, releasing the previous image to avoid mobile memory buildup.
+   let saver=document.getElementById('savePreview');
+   if(!saver){
+    saver=document.createElement('div');saver.id='savePreview';
+    saver.style.cssText='position:fixed;inset:0;z-index:99999;background:#f2f6fc;overflow:auto;padding:18px;text-align:center;font-family:system-ui,sans-serif';
+    saver.innerHTML='<button id="closeSavePreview" type="button" style="float:right;background:#dce6f5;padding:10px 14px;border:0;border-radius:8px">বন্ধ করুন ✕</button><h2 style="clear:both;padding-top:12px">আপনার ফ্রেমসহ ছবি তৈরি হয়েছে</h2><p>নিচের নীল বাটনে চাপ দিয়ে ছবি সেভ করুন। কাজ না করলে ছবির ওপর আঙুল চেপে ধরে <b>Download image / ছবি ডাউনলোড</b> নির্বাচন করুন।</p><img id="savePreviewImage" alt="ফ্রেমসহ ছবি" style="display:block;width:100%;max-width:600px;height:auto;margin:12px auto;border-radius:8px"><a id="savePreviewLink" style="display:inline-block;margin:10px;padding:13px 18px;background:#087ed0;color:white;border-radius:8px;text-decoration:none;font-weight:bold">ছবি ডাউনলোড করুন</a>';
+    document.body.appendChild(saver);
+    document.getElementById('closeSavePreview').addEventListener('click',()=>{
+     saver.style.display='none';
+     const im=document.getElementById('savePreviewImage');im.removeAttribute('src');
+     const link=document.getElementById('savePreviewLink');link.removeAttribute('href');
+     if(saveObjectUrl){URL.revokeObjectURL(saveObjectUrl);saveObjectUrl=null;}
+    });
+   }
+   if(saveObjectUrl)URL.revokeObjectURL(saveObjectUrl);
+   saveObjectUrl=URL.createObjectURL(blob);
+   document.getElementById('savePreviewImage').src=saveObjectUrl;
+   const link=document.getElementById('savePreviewLink');
+   link.href=saveObjectUrl;link.download='Mohim-Reunion-2027.png';
+   saver.style.display='block';
+   // Only attempt a direct download on non-mobile browsers; mobile uses the visible user-tapped link.
+   if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    const a=document.createElement('a');a.href=saveObjectUrl;a.download='Mohim-Reunion-2027.png';
+    document.body.appendChild(a);a.click();a.remove();
+   }
+  },'image/png');
+ }catch(err){btn.disabled=false;btn.textContent='ফ্রেমসহ ছবি ডাউনলোড';alert('ছবি তৈরি করা যায়নি। পেজটি রিফ্রেশ করে আবার চেষ্টা করুন।');}
 });
 draw();
 // Clear old cached app copies that may contain the previous broken download handler.
